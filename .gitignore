@@ -9,3 +9,5 @@ models/*.onnx
 .env
 .DS_Store
 *.whl
+datasets/
+configs/engine.local.yaml

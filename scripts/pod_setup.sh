@@ -2,13 +2,19 @@
 # Put every model the two workflows need into a ComfyUI install (run on the pod, or once on a
 # network volume so later pods boot without downloads). Idempotent: skips files that exist.
 #
-#   COMFY=/workspace/ComfyUI bash scripts/pod_setup.sh
+#   bash scripts/pod_setup.sh            (finds ComfyUI, or set COMFY=/path/to/ComfyUI)
 #   then copy your character LoRAs into $COMFY/models/loras/
 #
 # Sources are the Comfy-Org repackaged weights linked from ComfyUI's official workflow templates.
 # Licences: Wan 2.2 and Z-Image Turbo are Apache-2.0; check each model card before commercial use.
 set -euo pipefail
-COMFY="${COMFY:-/workspace/ComfyUI}"
+if [[ -z "${COMFY:-}" ]]; then  # RunPod's ComfyUI template uses /workspace/madapps/ComfyUI
+  for d in /workspace/madapps/ComfyUI /workspace/ComfyUI /ComfyUI; do
+    [[ -d "$d/models" ]] && COMFY="$d" && break
+  done
+fi
+: "${COMFY:?ComfyUI not found; run with COMFY=/path/to/ComfyUI}"
+echo "ComfyUI at $COMFY"
 M="$COMFY/models"
 HF=https://huggingface.co
 
