@@ -1,0 +1,10 @@
+id: mila
+name: Mila
+likeness: fictional        # an invented person; a real creator's likeness needs likeness: licensed + consent_record
+trigger: "m1la woman"
+look: "26 year old woman, shoulder-length dark brown wavy hair, light freckles, hazel eyes, natural makeup"
+lora: mila_zimage_v3.safetensors
+lora_strength: 0.9
+negative: ""
+reference_dir: runs/references/mila
+disclosure: "AI-generated character · #AIcreator"

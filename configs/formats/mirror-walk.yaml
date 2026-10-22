@@ -1,0 +1,30 @@
+id: mirror-walk
+description: Full-body mirror selfie, two steps toward the mirror. Outfit-led, loops cleanly.
+keyframe_prompt: >-
+  photo of {trigger}, {look}, full-body mirror selfie holding a phone at chest height, wearing {outfit},
+  {scene}, {light}, shot on a phone, realistic skin texture, slight sensor noise
+motion_prompt: >-
+  she takes two slow steps toward the mirror holding the phone steady, hair moves slightly,
+  handheld phone camera, natural pace, face stays turned to the mirror
+scenes:
+  - "in a sunlit apartment hallway with a tall arched mirror"
+  - "in a boutique fitting room with a brass-framed mirror"
+  - "in a hotel elevator with mirrored walls"
+  - "in a minimalist bedroom with a floor mirror"
+outfits:
+  - "a cream knit sweater and wide-leg jeans"
+  - "a black slip dress and white sneakers"
+  - "an oversized blazer and straight jeans"
+  - "a linen shirt and tailored shorts"
+lights:
+  - "soft morning window light"
+  - "warm golden hour light"
+  - "even overcast daylight"
+hooks:
+  - "fit check before the weekend"
+  - "which one would you keep?"
+  - "pov: the outfit actually worked"
+caption: "{hook}"
+hashtags: ["#ootd", "#fitcheck", "#mirrorselfie"]
+for_characters: [mila]
+head_ratio: [0.07, 0.20]

@@ -1,0 +1,10 @@
+id: rafa
+name: Rafa
+likeness: fictional
+trigger: "r4fa man"
+look: "30 year old man, short black hair with a fade, trimmed beard, athletic build, warm brown skin"
+lora: rafa_zimage_v2.safetensors
+lora_strength: 0.85
+negative: ""
+reference_dir: runs/references/rafa
+disclosure: "AI-generated character · #AIcreator"

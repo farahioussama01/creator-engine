@@ -1,0 +1,30 @@
+id: cafe-pov
+description: Seated at a cafe table, looks up from the cup and smiles. Has signage, so sign text is checked.
+keyframe_prompt: >-
+  photo of {trigger}, {look}, sitting at a small cafe table with a ceramic cup, wearing {outfit},
+  {scene}, a small sign in the background that reads "COFFEE", {light}, candid phone photo, realistic skin texture
+motion_prompt: >-
+  she looks up from the cup and smiles at the camera, steam rises from the cup, slow push-in,
+  people blur past in the background
+scenes:
+  - "in a tiled Lisbon cafe"
+  - "at a sidewalk cafe in Paris"
+  - "in a plant-filled coffee shop"
+  - "at a window seat on a rainy afternoon"
+outfits:
+  - "a striped long-sleeve top"
+  - "a camel coat over a white tee"
+  - "a soft grey hoodie"
+lights:
+  - "soft window light"
+  - "warm tungsten cafe light"
+hooks:
+  - "the only meeting I didn't cancel"
+  - "romanticizing a tuesday"
+  - "pov: you found the good cafe"
+caption: "{hook}"
+hashtags: ["#cafe", "#slowliving", "#coffee"]
+for_characters: [mila]
+head_ratio: [0.10, 0.24]
+has_signage: true
+allowed_text: ["coffee"]

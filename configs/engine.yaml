@@ -1,0 +1,61 @@
+# Engine config for the simulator / demo. For a real pod, copy configs/engine.gpu.yaml.
+workdir: runs
+db: runs/engine.db
+characters_dir: configs/characters
+formats_dir: configs/formats
+prices: configs/prices.yaml
+workflows:
+  keyframe: workflows/keyframe_zimage_lora.json
+  video: workflows/i2v_wan22_lightx2v.json
+
+analyzer: sim            # "real" = YuNet + AuraFace (ce models download)
+scheduling: phased       # all keyframes first, then clips: one model family resident per GPU
+
+# Cost knobs. `standard` is the workhorse; `hero` is for formats that earned it in the experiments.
+profiles:
+  draft:     { vid_width: 480, vid_height: 848, seconds: 3, keyframe_candidates: 1, max_video_attempts: 1 }
+  standard:  { vid_width: 480, vid_height: 848, seconds: 5, keyframe_candidates: 2, max_video_attempts: 2 }
+  hero:      { vid_width: 720, vid_height: 1280, seconds: 5, keyframe_candidates: 3, max_video_attempts: 2 }
+  quality20: { vid_width: 480, vid_height: 848, seconds: 5, lightning: false, vid_steps: 20, vid_cfg: 3.5, split_step: 10 }
+
+endpoints:               # the demo starts simulated pods on free ports and overrides these
+  - { name: sim-4090-a, url: "http://127.0.0.1:8188", gpu: rtx4090, usd_per_hour: 0.34, concurrency: 2 }
+  - { name: sim-4090-b, url: "http://127.0.0.1:8189", gpu: rtx4090, usd_per_hour: 0.34, concurrency: 2 }
+
+# Thresholds are calibrated on the simulator. On real renders, re-calibrate from a labelled sample:
+# `ce gates calibrate <batch> --labels labels.csv` -> recall / false rejects now, and a better threshold.
+gates:
+  exposure:          { params: { max_clip_hi: 0.02, max_clip_lo: 0.10, mean_min: 40, mean_max: 185 } }
+  face:              { params: { min_score: 0.6, max_faces: 1 } }
+  sharpness:         { params: { min_laplacian_var: 60 } }
+  skin_texture:      { params: { min_hf: 2.5 } }
+  identity:          { params: { min_cosine: 0.70 } }
+  sign_text:         { params: { min_confidence: 0.5 } }
+  motion:            { params: { min_motion: 0.15, max_motion: 4.5 } }
+  flicker:           { params: { max_luma_jump: 5.0 } }
+  temporal_identity: { params: { min_cosine: 0.70, samples: 8 } }   # 0.62 missed half the morphs: `ce gates calibrate`
+
+budget:
+  max_usd_per_batch: 25
+  max_usd_per_day: 60
+
+judge:                   # Claude vision rubric on survivors only; needs ANTHROPIC_API_KEY
+  enabled: false
+  model: claude-haiku-5-5
+  usd_per_mtok_in: 0.10
+  usd_per_mtok_out: 0.50
+  stages: [video]
+
+publish:
+  dry_run: true          # writes to runs/outbox instead of calling the Graph API
+  api_daily_cap: 50
+  graph_host: graph.instagram.com
+  api_version: v26.0
+  media_base_url: null   # e.g. https://media.example.com/ if runs/ is synced to a public bucket
+  accounts:
+    - { handle: mila.wanders,   character: mila, timezone: Europe/Lisbon,       daily_cap: 2, windows: ["12:00-13:30", "19:00-21:30"] }
+    - { handle: mila.slowdays,  character: mila, timezone: Europe/Madrid,       daily_cap: 2, windows: ["08:00-09:30", "20:00-22:00"] }
+    - { handle: rafa.lifts,     character: rafa, timezone: America/Mexico_City, daily_cap: 2, windows: ["07:00-08:30", "18:00-20:00"] }
+
+sim:
+  time_scale: 0.02       # 1 simulated GPU-second = 20 ms of wall time
