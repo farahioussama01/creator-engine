@@ -2,66 +2,64 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import cv2
 import pytest
-import yaml
 
-from creator_engine.config import EndpointSpec, load_characters, load_config
-from creator_engine.identity import enroll, list_images, make_sim_references, save
-from creator_engine.sim.server import SimComfyServer
-from creator_engine.store import Store
-from creator_engine.vision import make_analyzer
+from creator_engine import mock
+from creator_engine.config import load
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture
 def cfg(tmp_path):
-    c = load_config(ROOT / "configs" / "engine.yaml")
+    c = load(ROOT / "configs" / "config.yaml")
     c.workdir = tmp_path / "runs"
-    c.db = tmp_path / "runs" / "engine.db"
-    c.poll_seconds = 0.01
+    c.datasets_dir = tmp_path / "datasets"
+    c.provider = "mock"
     return c
 
 
-@pytest.fixture
-def config_file(tmp_path):
-    data = yaml.safe_load((ROOT / "configs" / "engine.yaml").read_text())
-    data.update(root=str(ROOT), workdir=str(tmp_path / "runs"), db=str(tmp_path / "runs" / "engine.db"))
-    p = tmp_path / "engine.yaml"
-    p.write_text(yaml.safe_dump(data))
-    return p
+class FakeFal:
+    """Stands in for fal_client: records every call and returns fal-shaped responses."""
+
+    def __init__(self, nsfw: bool = False):
+        self.calls: list[tuple[str, dict]] = []
+        self.nsfw = nsfw
+        self.n = 0
+
+    async def subscribe_async(self, model: str, arguments: dict) -> dict:
+        self.calls.append((model, arguments))
+        self.n += 1
+        if "image-to-video" in model:
+            return {"video": {"url": f"https://fal.media/clip{self.n}.mp4"}, "seed": arguments.get("seed")}
+        if "trainer" in model:
+            return {
+                "diffusers_lora_file": {"url": "https://fal.media/mila_lora.safetensors"},
+                "config_file": {"url": "https://fal.media/config.json"},
+            }
+        return {
+            "images": [{"url": f"https://fal.media/img{self.n}.png", "width": 720, "height": 1280}],
+            "seed": arguments.get("seed"),
+            "has_nsfw_concepts": [self.nsfw],
+        }
+
+    async def upload_file_async(self, path) -> str:
+        self.calls.append(("upload", {"path": str(path)}))
+        return f"https://fal.media/upload/{Path(path).name}"
 
 
-@pytest.fixture
-def store(cfg):
-    s = Store(cfg.path(cfg.db))
-    yield s
-    s.close()
+def fake_download(who: str = "mila"):
+    """Writes a mock still or clip where a real download would land."""
 
+    async def download(url: str, path: Path) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        seed = abs(hash(url)) % 10_000
+        img = mock.render_keyframe(360, 640, seed, who, set())
+        if path.suffix == ".mp4":
+            mock.write_mp4(mock.render_clip(img, 240, 424, 33, seed, set()), str(path))
+        else:
+            cv2.imwrite(str(path), img)
+        return path
 
-@pytest.fixture
-def analyzer():
-    return make_analyzer("sim")
-
-
-@pytest.fixture
-def enrolled(cfg, analyzer):
-    ch = load_characters(cfg)["mila"]
-    refs = make_sim_references(ch, cfg.path(cfg.workdir) / "references" / "mila", n=10)
-    centroid, rep = enroll(analyzer, "mila", list_images(refs[0].parent))
-    save(cfg, centroid, rep)
-    return centroid
-
-
-@pytest.fixture
-async def sim_pods(cfg):
-    """Two simulated RTX 4090 pods wired into cfg.endpoints."""
-    loras = [c.lora for c in load_characters(cfg).values()]
-    servers = [SimComfyServer(name=f"t{i}", time_scale=0.002, extra_loras=loras, seed=i) for i in range(2)]
-    urls = [await s.start() for s in servers]
-    cfg.endpoints = [
-        EndpointSpec(name=f"sim-{i}", url=u, gpu="rtx4090", usd_per_hour=0.34) for i, u in enumerate(urls)
-    ]
-    yield servers
-    for s in servers:
-        await s.stop()
+    return download

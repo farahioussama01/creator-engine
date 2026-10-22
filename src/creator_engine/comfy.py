@@ -171,9 +171,7 @@ class ComfyClient:
             raise ComfyValidationError("prompt rejected", body["node_errors"])
         return body["prompt_id"]
 
-    async def wait(
-        self, prompt_id: str, timeout: float = 1800.0, poll: float | None = None
-    ) -> dict[str, Any]:
+    async def wait(self, prompt_id: str, timeout: float = 1800.0, poll: float | None = None) -> dict[str, Any]:
         """Poll /history until the prompt finishes. Returns the history entry."""
         poll = poll or self.poll
         deadline = time.monotonic() + timeout
@@ -186,9 +184,7 @@ class ComfyClient:
                 status = entry.get("status") or {}
                 if status.get("completed") or status.get("status_str") in ("success", "error"):
                     if status.get("status_str") == "error":
-                        raise ComfyExecutionError(
-                            _error_text(entry), exec_seconds=_exec_seconds(entry) or 0.0
-                        )
+                        raise ComfyExecutionError(_error_text(entry), exec_seconds=_exec_seconds(entry) or 0.0)
                     return entry
             if time.monotonic() > deadline:
                 raise TimeoutError(f"prompt {prompt_id} did not finish in {timeout:.0f}s")

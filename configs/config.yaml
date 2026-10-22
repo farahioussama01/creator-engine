@@ -1,0 +1,31 @@
+# Where renders come from:
+#   fal      hosted open models, pay per render, no GPU needed (set FAL_KEY)
+#   comfyui  your own ComfyUI on a rented GPU (same pipeline, cost = GPU seconds x hourly rate)
+#   mock     offline cartoons for trying the flow; numbers are never treated as real
+provider: fal
+workdir: runs
+concurrency: 4          # pieces rendered at the same time
+budget_usd: 10          # a batch stops scheduling new renders past this
+
+keyframe_width: 720     # 9:16 still, ~0.92 MP -> ~$0.008 on fal
+keyframe_height: 1280
+keyframe_candidates: 2  # render 2 stills per piece, keep the one most like the character
+clip_resolution: 480p   # Wan 2.2 turbo on fal: 480p $0.05, 720p $0.10 per clip
+clip_attempts: 2        # re-roll a clip once if it fails its checks
+
+gates:
+  identity_min: auto    # "auto" = threshold suggested from your own training images
+  sharpness_min: 30
+  max_blown: 0.03
+  mean_min: 45
+  mean_max: 210
+  clip_min_motion: 0.3
+  clip_face_share: 0.75
+
+# Only used with provider: comfyui
+comfyui_url: http://127.0.0.1:8188
+comfyui_usd_per_hour: 0.34
+comfyui_lora_file: mila.safetensors
+
+character_file: configs/character.yaml
+formats_file: configs/formats.yaml

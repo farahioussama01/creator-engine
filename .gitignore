@@ -11,3 +11,4 @@ models/*.onnx
 *.whl
 datasets/
 configs/engine.local.yaml
+out/

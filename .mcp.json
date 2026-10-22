@@ -3,13 +3,9 @@
     "creator-engine": {
       "type": "stdio",
       "command": "creator-engine-mcp",
-      "args": [
-        "--config",
-        "${CLAUDE_PROJECT_DIR:-.}/configs/engine.yaml"
-      ],
       "env": {
-        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY:-}",
-        "RUNPOD_API_KEY": "${RUNPOD_API_KEY:-}"
+        "CE_CONFIG": "${CLAUDE_PROJECT_DIR:-.}/configs/config.yaml",
+        "FAL_KEY": "${FAL_KEY:-}"
       }
     }
   }

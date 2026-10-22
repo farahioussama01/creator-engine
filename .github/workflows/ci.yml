@@ -8,7 +8,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         python: ["3.11", "3.12", "3.13"]
     steps:
@@ -20,11 +19,4 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check src tests
       - run: pytest -q
-      - name: demo (simulated GPUs)
-        if: matrix.python == '3.13'
-        run: ce demo --pieces 12 --rounds 2 --time-scale 0.005
-      - uses: actions/upload-artifact@v4
-        if: matrix.python == '3.13'
-        with:
-          name: demo-report
-          path: runs/demo/reports/*.html
+      - run: ce run --n 12 --provider mock

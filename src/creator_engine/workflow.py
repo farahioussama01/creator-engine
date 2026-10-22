@@ -40,9 +40,7 @@ class TemplateError(ValueError):
 def load_template(path: str | Path) -> dict[str, Any]:
     with open(path, encoding="utf-8") as fh:
         graph = json.load(fh)
-    if not isinstance(graph, dict) or not all(
-        isinstance(v, dict) and "class_type" in v for v in graph.values()
-    ):
+    if not isinstance(graph, dict) or not all(isinstance(v, dict) and "class_type" in v for v in graph.values()):
         raise TemplateError(f"{path}: not an API-format ComfyUI graph (use 'Save (API)' in ComfyUI)")
     return graph
 

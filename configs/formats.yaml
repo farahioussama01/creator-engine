@@ -1,0 +1,55 @@
+# A format = a repeatable kind of post. Each piece picks a random scene and outfit.
+mirror-walk:
+  keyframe: >-
+    photo of {trigger}, {look}, full-body mirror selfie holding a phone at chest height,
+    wearing {outfit}, {scene}, shot on a phone, realistic skin texture
+  motion: >-
+    she takes two slow steps toward the mirror holding the phone steady, hair moves slightly,
+    handheld phone camera, face stays turned to the mirror
+  scenes:
+    - "in a sunlit apartment hallway with a tall arched mirror"
+    - "in a boutique fitting room with a brass-framed mirror"
+    - "in a hotel elevator with mirrored walls"
+    - "in a minimalist bedroom with a floor mirror"
+  outfits:
+    - "a cream knit sweater and wide-leg jeans"
+    - "a black slip dress and white sneakers"
+    - "an oversized blazer and straight jeans"
+  captions:
+    - "fit check before the weekend"
+    - "which one would you keep?"
+
+cafe-pov:
+  keyframe: >-
+    photo of {trigger}, {look}, sitting at a small cafe table with a ceramic cup, wearing {outfit},
+    {scene}, soft window light, candid phone photo, realistic skin texture
+  motion: >-
+    she looks up from the cup and smiles at the camera, steam rises from the cup, slow push-in
+  scenes:
+    - "in a tiled Lisbon cafe"
+    - "at a sidewalk cafe in Paris"
+    - "in a plant-filled coffee shop"
+  outfits:
+    - "a striped long-sleeve top"
+    - "a camel coat over a white tee"
+  captions:
+    - "romanticizing a tuesday"
+    - "the only meeting I didn't cancel"
+
+golden-street:
+  keyframe: >-
+    photo of {trigger}, {look}, walking toward the camera, wearing {outfit}, {scene},
+    low golden hour sun behind her, backlit hair, 35mm candid street photo, realistic skin texture
+  motion: >-
+    she walks toward the camera at a relaxed pace and glances to the side, warm backlight,
+    gentle handheld tracking shot
+  scenes:
+    - "on a cobblestone street in Lisbon"
+    - "on a tree-lined boulevard"
+    - "on a beach promenade"
+  outfits:
+    - "a white linen dress"
+    - "a denim jacket and black jeans"
+  captions:
+    - "this light only lasts 10 minutes"
+    - "walking home the long way"
